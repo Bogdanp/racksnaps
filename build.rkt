@@ -34,8 +34,18 @@
 (define (failed? name)
   (hash-has-key? failed-packages name))
 
-(define (build collections)
-  (setup #:collections (list collections)
+(define (min-version-met? v)
+  (and (string? v)
+       (string>=? (version) v)))
+
+(define (platform-met? s)
+  (and (platform-spec? s)
+       (matching-platform? s)))
+
+(define (build collects)
+  (setup #:collections (and collects
+                            (for/list ([s (in-list collects)])
+                              (if (list? s) s (list s))))
          #:jobs (processor-count)
          #:make-docs? #f
          #:make-doc-index? #f))
@@ -85,31 +95,23 @@
            [(? string?)
             (install-package dep)]
 
-           [(list name #:version _)
-            (install-package name)]
-
-           [(list name #:version _ #:platform spec)
-            #:when (matching-platform? spec)
-            (install-package name)]
-
-           [(list name #:platform spec)
-            #:when (matching-platform? spec)
+           [(or (list name           (? min-version-met?))
+                (list name #:version (? min-version-met?))
+                (list name #:version (? min-version-met?) #:platform (? platform-met?))
+                (list name                                #:platform (? platform-met?))
+                (list name #:version (? min-version-met?) #:platform (? platform-met?)))
             (install-package name)]
 
            [_
             (log-snapshot-warning "skipping dep ~.s due to unrecognized spec" dep)]))
 
        (define desc (pkg-desc src #f name #f #f))
-       (define to-setup
+       (define collects
         (with-pkg-lock
           (pkg-install (list desc))))
 
        (define success?
-         (match to-setup
-           [#f            #t]
-           ['skip         #t]
-           [(list)        #t]
-           [(list* colls) (build colls)]))
+         (build collects))
 
        (cond
          [success?
