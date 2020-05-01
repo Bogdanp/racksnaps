@@ -1,7 +1,6 @@
 #lang racket/base
 
-(require mzlib/os
-         racket/date
+(require racket/date
          racket/format
          racket/list
          racket/match)
@@ -25,9 +24,8 @@
                   (match-lambda
                     [(vector level message _ _)
                      (fprintf (current-output-port)
-                              "[~a] [~a] [~a] ~a\n"
+                              "[~a] [~a] ~a\n"
                               (pretty-date)
-                              (~a (getpid) #:align 'right #:width 8)
                               (~a level #:align 'right #:width 7)
                               message)
                      (receive-logs)]))
