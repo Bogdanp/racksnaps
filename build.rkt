@@ -78,22 +78,26 @@
        (thread
         (lambda ()
           (let loop ()
-            (sync
-             (handle-evt
-              (thread-receive-evt)
-              void)
-             (handle-evt
-              (read-line-evt out)
-              (lambda (l)
-                (unless (eof-object? l)
-                  (log-setup-debug "~a" (strip-line l)))
-                (loop)))
-             (handle-evt
-              (read-line-evt err)
-              (lambda (l)
-                (unless (eof-object? l)
-                  (log-setup-warning "~a" (strip-line l)))
-                (loop))))))))
+            (with-handlers ([exn:fail?
+                             (lambda (e)
+                               (log-setup-error "~a" (exn-message e))
+                               (loop))])
+              (sync
+               (handle-evt
+                (thread-receive-evt)
+                void)
+               (handle-evt
+                (read-line-evt out)
+                (lambda (l)
+                  (unless (eof-object? l)
+                    (log-setup-debug "~a" (strip-line l)))
+                  (loop)))
+               (handle-evt
+                (read-line-evt err)
+                (lambda (l)
+                  (unless (eof-object? l)
+                    (log-setup-warning "~a" (strip-line l)))
+                  (loop)))))))))
 
      (control 'wait)
      (begin0 (eq? (control 'status) 'done-ok)
