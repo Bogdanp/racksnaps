@@ -148,6 +148,6 @@
 
 (command-line
  #:args (snapshot-path store-path)
- (install-package "koyo")
+ (for-each install-package all-pkg-names)
  (compile-snapshot snapshot-path)
  (dedupe-snapshot snapshot-path store-path))
