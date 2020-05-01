@@ -4,11 +4,13 @@
          pkg/lib
          racket/cmdline
          racket/file
+         racket/format
          racket/future
          racket/match
          racket/path
+         racket/string
+         racket/system
          setup/matching-platform
-         setup/setup
          "http.rkt"
          "logging.rkt")
 
@@ -34,6 +36,14 @@
 (define (failed? name)
   (hash-has-key? failed-packages name))
 
+(define (mark-installed! name)
+  (hash-set! installed-packages name #t))
+
+(define (mark-failed! name)
+  (when (installed? name)
+    (hash-remove! installed-packages name))
+  (hash-set! failed-packages name #t))
+
 (define (min-version-met? v)
   (and (string? v)
        (string>=? (version) v)))
@@ -43,12 +53,20 @@
        (matching-platform? s)))
 
 (define (build collects)
-  (setup #:collections (and collects
-                            (for/list ([s (in-list collects)])
-                              (if (list? s) s (list s))))
-         #:jobs (processor-count)
-         #:make-docs? #f
-         #:make-doc-index? #f))
+  (cond
+    [(not collects) #t]
+    [else (zero?
+           (apply
+            system*/exit-code
+            (find-executable-path "raco")
+            "setup"
+            "-j" (~a (processor-count))
+            "--no-docs"
+            "--tidy"
+            (for/list ([p (in-list collects)])
+              (if (list? p)
+                  (string-join p "/")
+                  p))))]))
 
 (define (install-package name)
   (define info (get "pkg" name))
@@ -78,15 +96,14 @@
 
     [(ormap failed? deps)
      (log-snapshot-warning "skipping ~a because it has failed dependencies~n" name)
-     (hash-set! failed-packages name #t)]
+     (mark-failed! name)]
 
     [else
-     (hash-set! installed-packages name #t)
+     (mark-installed! name)
      (with-handlers ([exn:fail?
                       (lambda (e)
                         (log-snapshot-error (exn-message e))
-                        (hash-set! failed-packages name #t)
-                        (hash-remove! installed-packages name))])
+                        (mark-failed! name))])
        (for ([dep (in-list deps)]
              #:unless (installed? dep)
              #:unless (failed? dep))
@@ -120,6 +137,7 @@
          [else
           (with-pkg-lock
             (pkg-remove (list name)))
+          (mark-failed! name)
           (log-snapshot-warning "failed to build ~a" name)]))]))
 
 (define (compile-snapshot path)
