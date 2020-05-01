@@ -11,6 +11,7 @@ SNAPSHOT_PATH="$ROOT_PATH/snapshots/$SNAPSHOT"
 LOG_PATH="$SNAPSHOT_PATH.log"
 STORE_PATH="$ROOT_PATH/store"
 
+rm -rf "$SNAPSHOT_PATH"
 mkdir -p "$SNAPSHOT_PATH"
 
 docker run \
