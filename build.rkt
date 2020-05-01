@@ -169,7 +169,9 @@
 
          [else
           (with-pkg-lock
-            (pkg-remove (list name)))
+            (pkg-remove
+             #:quiet? #t
+             (list name)))
           (mark-failed! name)
           (log-snapshot-warning "failed to build ~a" name)]))]))
 
