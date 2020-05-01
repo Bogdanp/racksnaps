@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+log() {
+    printf "[%s] %s\n" "$(date)" "$@"
+}
+
+if [ ! -L /var/www/snapshots ]; then
+    log "Linking snapshots to www..."
+    ln -s /var/racksnaps/snapshots /var/www/snapshots
+fi
+
+log "Reloading nginx config..."
+service nginx reload

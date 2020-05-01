@@ -1,0 +1,12 @@
+server {
+    listen      80;
+    server_name racksnaps.defn.io;
+
+    root /var/www;
+
+    location /snapshots {
+        autoindex  on;
+        sendfile   on;
+        tcp_nopush on;
+    }
+}
