@@ -1,3 +1,3 @@
 .PHONY: deploy
 deploy:
-	scp *.rkt snapshots:/opt/racksnaps/
+	scp *.rkt racksnaps@snapshots:/opt/racksnaps/

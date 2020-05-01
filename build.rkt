@@ -64,10 +64,15 @@
               "setup"
               "-j" (~a (processor-count))
               "-D"
+              "--fail-fast"
+              "--check-pkg-deps"
               (for/list ([p (in-list collects)])
                 (if (list? p)
                     (string-join p "/")
                     p))))
+
+     (define (strip-line line)
+       (regexp-replace "^raco setup: " line ""))
 
      (define logger
        (thread
@@ -78,18 +83,20 @@
               (thread-receive-evt)
               void)
              (handle-evt
-              (choice-evt
-               (read-line-evt out)
-               (read-line-evt err))
-              (lambda (line)
-                (unless (eof-object? line)
-                  (define stripped-line
-                    (regexp-replace "^raco setup: " line ""))
-                  (log-setup-debug "~a" stripped-line))
+              (read-line-evt out)
+              (lambda (l)
+                (unless (eof-object? l)
+                  (log-setup-debug "~a" (strip-line l)))
+                (loop)))
+             (handle-evt
+              (read-line-evt err)
+              (lambda (l)
+                (unless (eof-object? l)
+                  (log-setup-warning "~a" (strip-line l)))
                 (loop))))))))
 
      (control 'wait)
-     (begin0 (control 'status)
+     (begin0 (eq? (control 'status) 'done-ok)
        (thread-send logger 'stop))]))
 
 (define (install-package name)
