@@ -1,6 +1,12 @@
 server {
     listen      80;
+    listen      443 ssl;
     server_name racksnaps.defn.io;
+
+    ssl_certificate     /var/certs/racksnaps.defn.io.crt;
+    ssl_certificate_key /var/certs/racksnaps.defn.io.key;
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
 
     root /var/www;
 
