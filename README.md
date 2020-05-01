@@ -22,7 +22,7 @@ When building a web app in CI you might limit the catalog list to just
 the snapshot:
 
     raco pkg config --set catalogs \
-        https://racksnaps.defn.io/snapshots/2020/05/01/catalog/ \
+        https://racksnaps.defn.io/snapshots/2020/05/01/catalog/
 
 ## License
 
