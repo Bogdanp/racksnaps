@@ -3,13 +3,15 @@
 set -euo pipefail
 
 IMAGE=jackfirth/racket:7.6-full
-SNAPSHOT="$(date +%Y%m%d)"
+SNAPSHOT="$(date +%Y)/$(date +%m)/$(date +%d)"
 ROOT_PATH="/var/racksnaps"
 CODE_PATH="/opt/racksnaps"
 CACHE_PATH="$ROOT_PATH/cache"
 SNAPSHOT_PATH="$ROOT_PATH/snapshots/$SNAPSHOT"
 LOG_PATH="$SNAPSHOT_PATH.log"
 STORE_PATH="$ROOT_PATH/store"
+
+mkdir -p "$SNAPSHOT_PATH"
 
 docker run \
        --rm \
