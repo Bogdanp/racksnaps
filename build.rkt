@@ -206,8 +206,8 @@
     (make-file-or-directory-link target-path path)))
 
 (command-line
- #:args (snapshot-path store-path)
+ #:args (snapshot-path store-path . pkgs)
  (file-stream-buffer-mode (current-output-port) 'line)
- (for-each install-package all-pkg-names)
+ (for-each install-package (if (null? pkgs) all-pkg-names pkgs))
  (compile-snapshot snapshot-path)
  (dedupe-snapshot snapshot-path store-path))
