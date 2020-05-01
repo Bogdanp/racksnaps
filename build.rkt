@@ -4,6 +4,7 @@
          pkg/lib
          racket/cmdline
          racket/file
+         racket/future
          racket/match
          racket/path
          setup/matching-platform
@@ -33,9 +34,9 @@
 (define (failed? name)
   (hash-has-key? failed-packages name))
 
-(define (build [colls #f])
-  (setup #:collections colls
-         #:avoid-main? #t
+(define (build collections)
+  (setup #:collections (list collections)
+         #:jobs (processor-count)
          #:make-docs? #f
          #:make-doc-index? #f))
 
@@ -87,9 +88,13 @@
            [(list name #:version _)
             (install-package name)]
 
-           [(list* name #:platform spec _)
-            (when (matching-platform? spec)
-              (install-package name))]
+           [(list name #:version _ #:platform spec)
+            #:when (matching-platform? spec)
+            (install-package name)]
+
+           [(list name #:platform spec)
+            #:when (matching-platform? spec)
+            (install-package name)]
 
            [_
             (log-snapshot-warning "skipping dep ~.s due to unrecognized spec" dep)]))
@@ -104,7 +109,7 @@
            [#f            #t]
            ['skip         #t]
            [(list)        #t]
-           [(list* colls) (build (list colls))]))
+           [(list* colls) (build colls)]))
 
        (cond
          [success?
