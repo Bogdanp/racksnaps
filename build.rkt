@@ -8,14 +8,16 @@
          racket/future
          racket/match
          racket/path
+         racket/port
          racket/string
          racket/system
          setup/matching-platform
          "http.rkt"
          "logging.rkt")
 
+(define-logger setup)
 (define-logger snapshot)
-(define stop-logger (start-logger '(snapshot)))
+(define stop-logger (start-logger '(pkg setup snapshot)))
 
 (define all-pkg-names
   (sort (get "pkgs") string<?))
@@ -55,17 +57,40 @@
 (define (build collects)
   (cond
     [(not collects) #t]
-    [else (zero?
-           (apply
-            system*/exit-code
-            (find-executable-path "raco")
-            "setup"
-            "-j" (~a (processor-count))
-            "-D"
-            (for/list ([p (in-list collects)])
-              (if (list? p)
-                  (string-join p "/")
-                  p))))]))
+    [else
+     (match-define (list out in pid err control)
+       (apply process*
+              (find-executable-path "raco")
+              "setup"
+              "-j" (~a (processor-count))
+              "-D"
+              (for/list ([p (in-list collects)])
+                (if (list? p)
+                    (string-join p "/")
+                    p))))
+
+     (define logger
+       (thread
+        (lambda ()
+          (let loop ()
+            (sync
+             (handle-evt
+              (thread-receive-evt)
+              void)
+             (handle-evt
+              (choice-evt
+               (read-line-evt out)
+               (read-line-evt err))
+              (lambda (line)
+                (unless (eof-object? line)
+                  (define stripped-line
+                    (regexp-replace "^raco setup: " line ""))
+                  (log-setup-debug "~a" stripped-line))
+                (loop))))))))
+
+     (control 'wait)
+     (begin0 (control 'status)
+       (thread-send logger 'stop))]))
 
 (define (install-package name)
   (define info (get "pkg" name))
@@ -124,7 +149,9 @@
        (define desc (pkg-desc src #f name #f #f))
        (define collects
         (with-pkg-lock
-          (pkg-install (list desc))))
+          (pkg-install
+           #:quiet? #t
+           (list desc))))
 
        (define success?
          (build collects))
@@ -167,6 +194,7 @@
 
 (command-line
  #:args (snapshot-path store-path)
+ (file-stream-buffer-mode (current-output-port) 'line)
  (for-each install-package all-pkg-names)
  (compile-snapshot snapshot-path)
  (dedupe-snapshot snapshot-path store-path))
