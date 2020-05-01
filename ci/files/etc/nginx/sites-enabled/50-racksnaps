@@ -10,6 +10,10 @@ server {
 
     root /var/www;
 
+    location / {
+        return 302 https://github.com/Bogdanp/racksnaps;
+    }
+
     location /snapshots {
         autoindex  on;
         sendfile   on;
