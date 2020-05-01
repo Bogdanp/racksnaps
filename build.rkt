@@ -61,8 +61,7 @@
             (find-executable-path "raco")
             "setup"
             "-j" (~a (processor-count))
-            "--no-docs"
-            "--tidy"
+            "-D"
             (for/list ([p (in-list collects)])
               (if (list? p)
                   (string-join p "/")
