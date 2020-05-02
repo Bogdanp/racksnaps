@@ -3,8 +3,8 @@
 This is a work in progress and it may not be stable enough for general
 use yet.
 
-This code builds daily snapshots of the official Racket Package
-Catalog.  The intent is to allow application developers to depend on
+This code builds daily snapshots of the official [Racket Package
+Catalog].  The intent is to allow application developers to depend on
 specific, unchanging sets of packages until they're ready to add more
 and/or update their apps.
 
