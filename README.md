@@ -1,6 +1,7 @@
 # racksnaps
 
-This is a work in progress and not all packages work at this point.
+This is a work in progress and it may not be stable enough for general
+use yet.
 
 This code builds daily snapshots of the official Racket Package
 Catalog.  The intent is to allow application developers to depend on
@@ -58,6 +59,9 @@ becomes the default, we'll switch to it.
 Snapshots are never modified once they succeed and a content
 addressing scheme is used for the individual packages to avoid using
 up too much disk space over time.
+
+`snapshot.rkt` creates the "source" snapshots and `built-snapshot.rkt`
+creates the "built" snapshots.
 
 
 ## License
