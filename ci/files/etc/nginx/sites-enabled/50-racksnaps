@@ -19,4 +19,10 @@ server {
         sendfile   on;
         tcp_nopush on;
     }
+
+    location /built-snapshots {
+        autoindex  on;
+        sendfile   on;
+        tcp_nopush on;
+    }
 }

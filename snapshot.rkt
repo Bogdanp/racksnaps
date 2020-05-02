@@ -13,9 +13,8 @@
          "sugar.rkt")
 
 (define-logger archive)
-(define-logger setup)
 (define-logger snapshot)
-(define stop-logger (start-logger '(archive deduper pkg setup snapshot)))
+(define stop-logger (start-logger '(archive deduper pkg snapshot)))
 
 (define all-pkgs
   (get "pkgs-all"))

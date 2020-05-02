@@ -7,7 +7,11 @@ Catalog.  The intent is to allow application developers to depend on
 specific, unchanging sets of packages until they're ready to add more
 and/or update their apps.
 
-The snapshots are currently available at https://racksnaps.defn.io/snapshots/.
+The snapshots are currently available at
+
+* https://racksnaps.defn.io/snapshots/ for source snapshots and
+* https://racksnaps.defn.io/built-snapshots/ for package snapshots
+  built using regular Racket 7.6.
 
 To develop against the snapshot from May 2nd, 2020 using Racket 7.6,
 you might run the following command:

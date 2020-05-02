@@ -6,9 +6,20 @@ log() {
     printf "[%s] %s\n" "$(date)" "$@"
 }
 
+if [ ! -d /var/racksnaps ]; then
+    log "Creating /var/racksnaps..."
+    sudo mkdir -p /var/racksnaps/{cache,snapshots,built-snapshots,store}
+    sudo chown -R racksnaps:racksnaps /var/racksnaps
+fi
+
 if [ ! -L /var/www/snapshots ]; then
     log "Linking snapshots to www..."
     ln -s /var/racksnaps/snapshots /var/www/snapshots
+fi
+
+if [ ! -L /var/www/built-snapshots ]; then
+    log "Linking built-snapshots to www..."
+    ln -s /var/racksnaps/built-snapshots /var/www/built-snapshots
 fi
 
 log "Reloading nginx config..."

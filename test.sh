@@ -4,7 +4,23 @@ set -euo pipefail
 
 docker run \
        --rm \
-       -it \
-       -v"$(pwd)":/code \
+       -v"$(pwd)":"$(pwd)" \
        -v"$(pwd)"/cache:/root/.racket/download-cache \
-       bogdanp/racksnaps:7.6 racket /code/snapshot.rkt /code/archive /code/store $@
+       bogdanp/racksnaps:7.6 racket \
+         "$(pwd)/snapshot.rkt" \
+         "$(pwd)/archive" \
+         "$(pwd)/store" \
+         $@
+
+docker run \
+       --rm \
+       -v"$(pwd)":"$(pwd)" \
+       -v"$(pwd)"/cache:/root/.racket/download-cache \
+       -v/var/run/docker.sock:/var/run/docker.sock \
+       bogdanp/racksnaps-built:7.6 racket \
+         "$(pwd)/built-snapshot.rkt" \
+         "$(pwd)" \
+         "$(pwd)/archive" \
+         "$(pwd)/built-archive" \
+         "$(pwd)/store" \
+         $@
