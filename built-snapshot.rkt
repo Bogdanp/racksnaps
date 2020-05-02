@@ -19,7 +19,7 @@
 (define stop-logger (start-logger '(build deduper docker pkg setup)))
 
 (define current-concurrency
-  (make-parameter (* (processor-count) 2)))
+  (make-parameter (processor-count)))
 
 (define docker
   (find-executable-path "docker"))
