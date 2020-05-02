@@ -1,15 +1,13 @@
 #lang racket/base
 
-(require file/sha1
-         (except-in pkg/lib pkg-create pkg-stage)
+(require (except-in pkg/lib pkg-create pkg-stage)
          pkg/private/create
          pkg/private/stage
          racket/async-channel
-         racket/cmdline
          racket/file
          racket/future
          racket/match
-         racket/path
+         "deduplication.rkt"
          "http.rkt"
          "logging.rkt"
          "sugar.rkt")
@@ -17,7 +15,7 @@
 (define-logger archive)
 (define-logger setup)
 (define-logger snapshot)
-(define stop-logger (start-logger '(archive pkg setup snapshot)))
+(define stop-logger (start-logger '(archive deduper pkg setup snapshot)))
 
 (define all-pkgs
   (get "pkgs-all"))
@@ -92,6 +90,12 @@
              #:when (member k INFO_KEYS))
     (values k v)))
 
+(define (write/rktd path data)
+  (log-snapshot-debug "writing ~a" path)
+  (call-with-output-file path
+    (lambda (out)
+      (write data out))))
+
 (define (snapshot-package name info path dest)
   (log-snapshot-debug "creating archive of ~a" name)
   (pkg-create
@@ -131,10 +135,7 @@
                             (begin0 pkgs-all
                               (log-snapshot-error "failed to snapshot ~a~n  error: ~a" name (exn-message e))))])
            (define info* (snapshot-package name info path pkgs-path))
-           (log-snapshot-debug "writing catalog/pkgs/~a" name)
-           (call-with-output-file (build-path catalog/pkg-path name)
-             (lambda (out)
-               (write info* out)))
+           (write/rktd (build-path catalog/pkg-path name) info*)
            (hash-set pkgs-all name info*))]
 
         [(list 'error name e)
@@ -145,51 +146,23 @@
          (begin0 pkgs-all
            (log-snapshot-warning "skipping ~a due to timeout" name))])))
 
-  (log-snapshot-debug "writing catalog/pkgs")
-  (call-with-output-file (build-path catalog-path "pkgs")
-    (lambda (out)
-      (write (sort (hash-keys pkgs-all) string<?) out)))
-
-  (log-snapshot-debug "writing catalog/pkgs-all")
-  (call-with-output-file (build-path catalog-path "pkgs-all")
-    (lambda (out)
-      (write pkgs-all out))))
+  (write/rktd (build-path catalog-path "pkgs") (sort (hash-keys pkgs-all) string<?))
+  (write/rktd (build-path catalog-path "pkgs-all") pkgs-all))
 
 
-;; deduplication ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(define (dedupe-snapshot snapshot-path store-path)
-  (define all-pkg-archives
-    (find-files
-     (lambda (p)
-       (equal? (path-get-extension p) #".zip"))
-     (build-path snapshot-path "pkgs")))
-  (for ([path (in-list all-pkg-archives)])
-    (when (link-exists? path)
-      (error 'dedupe-snapshot "path ~a is already a link" path))
-
-    (define digest (call-with-input-file path sha1))
-    (match-define (list _ d1 d2 fn)
-      (regexp-match #rx"(..)(..)(.+)" digest))
-
-    (define target-path (build-path store-path d1 d2 fn))
-    (log-snapshot-debug "deduplicating ~a to ~a" path target-path)
-    (make-directory* (path-only target-path))
-    (rename-file-or-directory path target-path #t)
-    (make-file-or-directory-link target-path path)))
-
-
-(command-line
- #:once-each
- [("-c" "--concurrency")
-  concurrency
-  "the maximum number of packages to archive at once"
-  (current-concurrency (string->number concurrency))]
- #:args (snapshot-path store-path . pkgs)
- (file-stream-buffer-mode (current-output-port) 'line)
- (define packages-to-snapshot (if (null? pkgs) (hash-keys all-pkgs) pkgs))
- (log-snapshot-info "about to snapshot ~a packages with ~a concurrency" (length packages-to-snapshot) (current-concurrency))
- (define ch (archive-packages packages-to-snapshot))
- (snapshot-packages packages-to-snapshot snapshot-path ch)
- (dedupe-snapshot snapshot-path store-path)
- (stop-logger))
+(module+ main
+  (require racket/cmdline)
+  (command-line
+   #:once-each
+   [("-c" "--concurrency")
+    concurrency
+    "the maximum number of packages to archive at once"
+    (current-concurrency (string->number concurrency))]
+   #:args (snapshot-path store-path . pkgs)
+   (file-stream-buffer-mode (current-output-port) 'line)
+   (define packages-to-snapshot (if (null? pkgs) (hash-keys all-pkgs) pkgs))
+   (log-snapshot-info "about to snapshot ~a packages with ~a concurrency" (length packages-to-snapshot) (current-concurrency))
+   (define ch (archive-packages packages-to-snapshot))
+   (snapshot-packages packages-to-snapshot snapshot-path ch)
+   (dedupe-snapshot snapshot-path store-path)
+   (stop-logger)))

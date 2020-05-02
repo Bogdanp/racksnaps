@@ -20,4 +20,4 @@ docker run \
        -v"$CODE_PATH":/code \
        -v"$CACHE_PATH":/root/.racket/download-cache \
        "$IMAGE" \
-       racket /code/build.rkt "$SNAPSHOT_PATH" "$STORE_PATH" | tee "$LOG_PATH"
+       racket /code/snapshot.rkt "$SNAPSHOT_PATH" "$STORE_PATH" | tee "$LOG_PATH"
