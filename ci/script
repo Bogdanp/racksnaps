@@ -24,3 +24,7 @@ fi
 
 log "Reloading nginx config..."
 service nginx reload
+
+log "Pulling docker images..."
+docker pull bogdanp/racksnaps:7.6
+docker pull bogdanp/racksnaps-built:7.6
