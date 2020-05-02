@@ -30,6 +30,9 @@
     (lambda (out)
       (write data out))))
 
+(define BUILD_TIMEOUT
+  (* 30 60 1000))
+
 (define (build-package root-path snapshot-path built-snapshot-path name)
   (log-build-info "building package ~a" name)
   (match-define (list out _in _pid err control)
@@ -75,7 +78,15 @@
                  (log-docker-warning "~a: ~a" name line))
                (loop)))))))))
 
-  (control 'wait)
+  (sync
+   (handle-evt
+    (alarm-evt (+ (current-inexact-milliseconds) BUILD_TIMEOUT))
+    (lambda _
+      (control 'kill)))
+   (thread
+    (lambda ()
+      (control 'wait))))
+
   (begin0 (eq? (control 'status) 'done-ok)
     (thread-send logger-thd 'stop)))
 
@@ -88,7 +99,7 @@
 
   (define sema (make-semaphore (current-concurrency)))
   (define ch (make-async-channel (* (current-concurrency) 8)))
-  (for/list ([name (in-list names)])
+  (for ([name (in-list names)])
     (thread
      (lambda ()
        (call-with-semaphore sema
