@@ -40,6 +40,7 @@
      docker
      "run"
      "--rm"
+     "--stop-signal" "SIGKILL"
      (format "-v~a:~a" root-path root-path)
      "-e" "CI=1"
      "bogdanp/racksnaps-built:7.6"
@@ -82,7 +83,7 @@
    (handle-evt
     (alarm-evt (+ (current-inexact-milliseconds) BUILD_TIMEOUT))
     (lambda _
-      (control 'kill)))
+      (control 'interrupt)))
    (thread
     (lambda ()
       (control 'wait))))
