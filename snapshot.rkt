@@ -127,7 +127,7 @@
   (define pkgs-all
     (for/fold ([pkgs-all (hash)])
               ([i (in-range total-pkgs)])
-      (log-snapshot-info "progress: [~a/~a]" (add1 i) total-pkgs)
+      (log-snapshot-info "progress: [~a/~a]" i total-pkgs)
       (match (sync ch)
         [(list 'archived name info path)
          (with-handlers ([exn:fail?
@@ -140,7 +140,7 @@
 
         [(list 'error name e)
          (begin0 pkgs-all
-           (log-snapshot-warning "skipping ~a due to error ~a" name (exn-message e)))]
+           (log-snapshot-warning "skipping ~a due to error~n~a" name (exn-message e)))]
 
         [(list 'timeout name)
          (begin0 pkgs-all
