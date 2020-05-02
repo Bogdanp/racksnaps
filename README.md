@@ -9,19 +9,21 @@ and/or update their apps.
 
 The snapshots are currently available at https://racksnaps.defn.io/snapshots/.
 
-To develop against the snapshot from May 1st, 2020 using Racket 7.6,
+To develop against the snapshot from May 2nd, 2020 using Racket 7.6,
 you might run the following command:
 
     raco pkg config --set catalogs \
-        https://racksnaps.defn.io/snapshots/2020/05/01/catalog/ \
         https://download.racket-lang.org/releases/7.6/catalog/ \
+        https://racksnaps.defn.io/snapshots/2020/05/01/catalog/ \
         https://pkgs.racket-lang.org \
         https://planet-compats.racket-lang.org
 
 When building a web app in CI you might limit the catalog list to just
-the snapshot:
+the release catalog (for packages in the main distribution) and the
+snapshot:
 
     raco pkg config --set catalogs \
+        https://download.racket-lang.org/releases/7.6/catalog/ \
         https://racksnaps.defn.io/snapshots/2020/05/01/catalog/
 
 ## License
