@@ -31,7 +31,7 @@
       (write data out))))
 
 (define BUILD_TIMEOUT
-  (* 30 60 1000))
+  (* 10 60 1000))
 
 (define (build-package root-path snapshot-path built-snapshot-path name)
   (log-build-info "building package ~a" name)
