@@ -18,7 +18,7 @@ you might run the following command:
 
     raco pkg config --set catalogs \
         https://download.racket-lang.org/releases/7.6/catalog/ \
-        https://racksnaps.defn.io/snapshots/2020/05/01/catalog/ \
+        https://racksnaps.defn.io/snapshots/2020/05/02/catalog/ \
         https://pkgs.racket-lang.org \
         https://planet-compats.racket-lang.org
 
@@ -28,14 +28,14 @@ snapshot:
 
     raco pkg config --set catalogs \
         https://download.racket-lang.org/releases/7.6/catalog/ \
-        https://racksnaps.defn.io/snapshots/2020/05/01/catalog/
+        https://racksnaps.defn.io/snapshots/2020/05/02/catalog/
 
 To speed up builds, you might layer in the built-snapshot for that day:
 
     raco pkg config --set catalogs \
         https://download.racket-lang.org/releases/7.6/catalog/ \
-        https://racksnaps.defn.io/built-snapshots/2020/05/01/catalog/ \
-        https://racksnaps.defn.io/snapshots/2020/05/01/catalog/
+        https://racksnaps.defn.io/built-snapshots/2020/05/02/catalog/ \
+        https://racksnaps.defn.io/snapshots/2020/05/02/catalog/
 
 ## License
 
