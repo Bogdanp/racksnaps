@@ -25,8 +25,11 @@
 
 ;; archiving ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define STAGE_TIMEOUT
+  (* 10 60 1000))
+
 (define current-concurrency
-  (make-parameter (processor-count)))
+  (make-parameter (* (processor-count) 2)))
 
 (define (archive-package name)
   (define info (hash-ref all-pkgs name))
@@ -53,26 +56,30 @@
 
 (define (archive-packages pkgs)
   (define sema (make-semaphore (current-concurrency)))
-  (define out (make-async-channel 128))
+  (define out (make-async-channel (* (current-concurrency) 8)))
   (begin0 out
     (for ([name (in-list pkgs)])
       (thread
        (lambda ()
          (call-with-semaphore sema
            (lambda ()
+             (define store-thd
+               (thread
+                (lambda ()
+                  (with-handlers ([exn:fail? (lambda (e)
+                                               (async-channel-put out (list 'error name e)))])
+                    (define-values (info path)
+                      (archive-package name))
+
+                    (async-channel-put out (list 'archived name info path))))))
+
              (sync
               (handle-evt
-               (alarm-evt (+ (current-inexact-milliseconds) (* 60 1000)))
+               (alarm-evt (+ (current-inexact-milliseconds) STAGE_TIMEOUT))
                (lambda _
+                 (kill-thread store-thd)
                  (async-channel-put out (list 'timeout name))))
-              (thread
-               (lambda ()
-                 (with-handlers ([exn:fail? (lambda (e)
-                                              (async-channel-put out (list 'error name e)))])
-                   (define-values (info path)
-                     (archive-package name))
-
-                   (async-channel-put out (list 'archived name info path)))))))))))))
+              store-thd))))))))
 
 
 ;; snapshot ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -104,6 +111,7 @@
                                                    'source (path->string pkg-src-path))))))
 
 (define (snapshot-packages pkgs dest ch)
+  (define total-pkgs (length pkgs))
   (define catalog-path (build-path dest "catalog"))
   (define catalog/pkg-path (build-path catalog-path "pkg"))
   (delete-directory/files catalog-path #:must-exist? #f)
@@ -114,7 +122,8 @@
   (make-directory* pkgs-path)
   (define pkgs-all
     (for/fold ([pkgs-all (hash)])
-              ([_ (in-range (length pkgs))])
+              ([i (in-range total-pkgs)])
+      (log-snapshot-info "progress: [~a/~a]" (add1 i) total-pkgs)
       (match (sync ch)
         [(list 'archived name info path)
          (with-handlers ([exn:fail?
@@ -122,6 +131,7 @@
                             (begin0 pkgs-all
                               (log-snapshot-error "failed to snapshot ~a~n  error: ~a" name (exn-message e))))])
            (define info* (snapshot-package name info path pkgs-path))
+           (log-snapshot-debug "writing catalog/pkgs/~a" name)
            (call-with-output-file (build-path catalog/pkg-path name)
              (lambda (out)
                (write info* out)))
