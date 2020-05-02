@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-IMAGE=jackfirth/racket:7.6-full
+IMAGE=bogdanp/racksnaps:7.6
 SNAPSHOT="$(date +%Y)/$(date +%m)/$(date +%d)"
 ROOT_PATH="/var/racksnaps"
 CODE_PATH="/opt/racksnaps"

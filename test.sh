@@ -7,4 +7,4 @@ docker run \
        -it \
        -v"$(pwd)":/code \
        -v"$(pwd)"/cache:/root/.racket/download-cache \
-       jackfirth/racket:7.6-cs-full racket /code/build.rkt /code/archive /code/store $@
+       bogdanp/racksnaps:7.6 racket /code/build.rkt /code/archive /code/store $@
