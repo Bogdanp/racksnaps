@@ -5,4 +5,4 @@ docker-image:
 
 .PHONY: deploy
 deploy:
-	scp *.rkt racksnaps@snapshots:/opt/racksnaps/
+	rsync -avh --delete *.rkt racksnaps@snapshots:/opt/racksnaps/
