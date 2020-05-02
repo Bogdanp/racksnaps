@@ -30,7 +30,7 @@
     (lambda (out)
       (write data out))))
 
-(define (build-package root-path snapshot-path built-pkgs-path name)
+(define (build-package root-path snapshot-path built-snapshot-path name)
   (log-build-info "building package ~a" name)
   (match-define (list out _in _pid err control)
     (process*
@@ -43,9 +43,12 @@
      "-c"
      @~a{
          set -euo pipefail
-         raco pkg config --set catalogs https://download.racket-lang.org/releases/7.6/catalog/ file://@|snapshot-path|/catalog/
-         raco pkg install --batch --auto @name
-         raco pkg create --built --dest @|built-pkgs-path| --from-install @name
+         raco pkg config --set catalogs \
+           https://download.racket-lang.org/releases/7.6/catalog/ \
+           file://@|built-snapshot-path|/catalog/ \
+           file://@|snapshot-path|/catalog/
+         raco pkg install --batch --auto --fail-fast @name
+         raco pkg create --built --dest @|built-snapshot-path|/pkgs --from-install @name
          }))
 
   (define logger-thd
@@ -95,7 +98,7 @@
                               (log-build-error "failed to build ~a~n error: ~a" name (exn-message e))
                               (async-channel-put ch (list 'failed name)))])
              (define built?
-               (build-package root-path snapshot-path built-pkgs-path name))
+               (build-package root-path snapshot-path built-snapshot-path name))
 
              (async-channel-put ch (if built?
                                        (list 'built name)
