@@ -1,1 +1,1 @@
-@daily root /usr/local/bin/snapshot.sh
+@daily root /usr/local/bin/snapshot.sh >/dev/null
