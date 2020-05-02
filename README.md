@@ -37,6 +37,29 @@ To speed up builds, you might layer in the built-snapshot for that day:
         https://racksnaps.defn.io/built-snapshots/2020/05/02/catalog/ \
         https://racksnaps.defn.io/snapshots/2020/05/02/catalog/
 
+
+## How it Works
+
+Every day at 12am UTC, the service queries all the packages on
+pkgs.racket-lang.org for metadata and source locations.  It then
+creates a source package archive for each of the packages whose
+sources are still valid.
+
+Once all the source packages are built, "built" packages (packages
+that contain source code, docs and compiled `.zo` files) are created
+from the source packages.  Each of these is compiled in isolation and
+any packages that don't compile cleanly are excluded from the final
+snapshot.
+
+The packages are currently being built using Racket BC 7.6.  When 7.7
+comes out, we'll switch to it for future builds and when Racket CS
+becomes the default, we'll switch to it.
+
+Snapshots are never modified once they succeed and a content
+addressing scheme is used for the individual packages to avoid using
+up too much disk space over time.
+
+
 ## License
 
     racksnaps is licensed under the 3-Clause BSD license.
