@@ -38,9 +38,9 @@
      "run"
      "--rm"
      (format "-v~a:~a" root-path root-path)
-     "bogdanp/racksnaps:7.6"
-     "bash"
-     "-c"
+     "-e" "CI=1"
+     "bogdanp/racksnaps-built:7.6"
+     "bash" "-c"
      @~a{
          set -euo pipefail
          raco pkg config --set catalogs \
