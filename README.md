@@ -64,9 +64,26 @@ up too much disk space over time.
 creates the "built" snapshots.
 
 
+## Testing Changes Locally
+
+The code relies on [Docker] so you'll need a system that supports it.
+
+To run a full build, you can invoke
+
+    ./test.sh
+
+in the root of the repository.
+
+To run a build for a subset of packages, you can invoke `test.sh` with
+whichever packages you want to build:
+
+    ./test.sh component component-lib component-doc
+
+
 ## License
 
     racksnaps is licensed under the 3-Clause BSD license.
 
 
 [Racket Package Catalog]: https://pkgs.racket-lang.org/
+[Docker]: https://www.docker.com/
