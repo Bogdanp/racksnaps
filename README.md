@@ -5,8 +5,8 @@ use yet.
 
 This code builds daily snapshots of the official [Racket Package
 Catalog].  The intent is to allow application developers to depend on
-specific, unchanging sets of packages until they're ready to add more
-and/or update their apps.
+specific, unchanging sets of packages until they're ready to update
+their apps.
 
 The snapshots are currently available at
 
@@ -64,7 +64,7 @@ up too much disk space over time.
 creates the "built" snapshots.
 
 
-## Testing Changes Locally
+## Testing Changes
 
 The code relies on [Docker] so you'll need a system that supports it.
 

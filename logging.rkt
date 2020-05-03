@@ -3,7 +3,9 @@
 (require racket/date
          racket/format
          racket/list
-         racket/match)
+         racket/match
+         racket/port
+         "term.rkt")
 
 (provide
  start-logger)
@@ -26,7 +28,16 @@
                      (fprintf (current-output-port)
                               "[~a] [~a] ~a\n"
                               (pretty-date)
-                              (~a level #:align 'right #:width 7)
+                              (with-output-to-string
+                                (lambda _
+                                  (colorize
+                                   (case level
+                                     [(debug)   `((fg ,(make-color 0 0 4)))]
+                                     [(info)    `((fg ,(make-color 0 3 0)))]
+                                     [(warning) `((fg ,(make-color 3 1 0)))]
+                                     [(error)   `((fg ,(make-color 3 0 0)))]
+                                     [else      null])
+                                   (display (~a level #:align 'right #:width 7)))))
                               message)
                      (receive-logs)]))
       stopped)))
