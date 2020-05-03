@@ -55,7 +55,7 @@ body {
 }
 
 .para {
-  margin: 12px 0;
+  margin: 16px 0;
 }
 
 .pre {
