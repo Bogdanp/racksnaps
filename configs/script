@@ -32,3 +32,9 @@ docker pull bogdanp/racksnaps-built:7.6
 log "Pruning docker containers & images..."
 docker container prune -f
 docker image prune -f
+
+log "Reloading systemd daemon..."
+systemctl daemon-reload
+
+log "Restarting site service..."
+service racksnaps-site restart

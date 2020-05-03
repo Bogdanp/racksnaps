@@ -1,3 +1,9 @@
+upstream racksnaps_site_backend {
+    server 127.0.0.1:8000;
+
+    keepalive 128;
+}
+
 server {
     listen      80;
     listen      443 ssl;
@@ -11,7 +17,16 @@ server {
     root /var/www;
 
     location / {
-        return 302 https://github.com/Bogdanp/racksnaps;
+        proxy_pass             http://racksnaps_site_backend;
+        proxy_http_version     1.1;
+        proxy_connect_timeout  60s;
+        proxy_send_timeout     60s;
+        proxy_read_timeout     60s;
+        proxy_set_header       Connection      "";
+        proxy_set_header       Host            $host;
+        proxy_set_header       X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header       X-Real-IP       $remote_addr;
+        proxy_intercept_errors on;
     }
 
     location /snapshots {

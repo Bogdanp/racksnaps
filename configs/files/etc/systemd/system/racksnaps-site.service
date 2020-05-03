@@ -1,0 +1,17 @@
+[Unit]
+Description=racksnaps-site
+
+[Service]
+ExecStart= \
+  /usr/bin/docker run \
+    --rm \
+    -v /var/racksnaps:/var/racksnaps \
+    -v /opt/racksnaps:/opt/racksnaps \
+    -p 8000:8000 \
+    --workdir /var/racksnaps \
+    bogdanp/racksnaps:7.6 \
+      dumb-init \
+      racket /opt/racksnaps/site.rkt
+
+[Install]
+WantedBy=multi-user.target

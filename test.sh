@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+SNAPSHOT="$(date +%Y)/$(date +%m)/$(date +%d)"
+
 docker run \
        --rm \
        -v"$(pwd)":"$(pwd)" \
@@ -10,7 +12,7 @@ docker run \
          dumb-init \
          racket \
          "$(pwd)/snapshot.rkt" \
-         "$(pwd)/archive" \
+         "$(pwd)/snapshots/$SNAPSHOT" \
          "$(pwd)/store" \
          $@
 
@@ -24,7 +26,7 @@ docker run \
          racket \
          "$(pwd)/built-snapshot.rkt" \
          "$(pwd)" \
-         "$(pwd)/archive" \
-         "$(pwd)/built-archive" \
+         "$(pwd)/snapshots/$SNAPSHOT" \
+         "$(pwd)/built-snapshots/$SNAPSHOT" \
          "$(pwd)/store" \
          $@
