@@ -1,5 +1,9 @@
 # racksnaps
 
+<p align="left">
+  <a href="https://github.com/Bogdanp/racksnaps/actions?query=workflow%3A%22CI%22"><img alt="GitHub Actions status" src="https://github.com/Bogdanp/racksnaps/workflows/CI/badge.svg"></a>
+</p>
+
 This is a work in progress and it may not be stable enough for general
 use yet.
 
