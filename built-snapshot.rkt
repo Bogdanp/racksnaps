@@ -1,7 +1,7 @@
 #lang at-exp racket/base
 
 (require net/url
-         (except-in pkg/lib pkg-create pkg-stage)
+         pkg/lib
          racket/async-channel
          racket/file
          racket/format
