@@ -24,7 +24,8 @@ docker run \
        -v"$CODE_PATH":/code \
        -v"$CACHE_PATH":/root/.racket/download-cache \
        "$SNAPSHOT_IMAGE" \
-       racket \
+       dumb-init \
+         racket \
          /code/snapshot.rkt \
          "$SNAPSHOT_PATH" \
          "$STORE_PATH" | tee "$SNAPSHOT_LOG_PATH"
@@ -36,7 +37,8 @@ docker run \
        -v"$CACHE_PATH":/root/.racket/download-cache \
        -v/var/run/docker.sock:/var/run/docker.sock \
        "$BUILT_SNAPSHOT_IMAGE" \
-       racket \
+       dumb-init \
+         racket \
          /code/built-snapshot.rkt \
          "$ROOT_PATH" \
          "$SNAPSHOT_PATH" \

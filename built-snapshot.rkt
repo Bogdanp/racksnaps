@@ -40,15 +40,16 @@
      docker
      "run"
      "--rm"
-     "--stop-signal" "SIGKILL"
-     (format "-v~a:~a" root-path root-path)
+     "--network" "none"
      "-e" "CI=1"
+     "-e" "PLT_PKG_BUILD_SERVICE=1"
+     (format "-v~a:~a" root-path root-path)
      "bogdanp/racksnaps-built:7.6"
+     "dumb-init"
      "bash" "-c"
      @~a{
          set -euo pipefail
          raco pkg config --set catalogs \
-           https://download.racket-lang.org/releases/7.6/catalog/ \
            file://@|built-snapshot-path|/catalog/ \
            file://@|snapshot-path|/catalog/
          raco pkg install --batch --auto --fail-fast @name
