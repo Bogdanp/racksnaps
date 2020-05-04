@@ -3,6 +3,7 @@
 (require file/unzip
          openssl/sha1
          racket/file
+         racket/format
          racket/match
          racket/path
          racket/port)
@@ -12,7 +13,7 @@
 
 (define-logger deduper)
 
-;; Zip files contain the modification times of each file contained
+;; Zip files record the modification times of each file contained
 ;; within them so hashing them does not produce deterministic values.
 ;; Instead, we must sort the files by name and then hash the contents
 ;; of the files within the zips themselves, which is what this
@@ -49,12 +50,20 @@
     (when (link-exists? path)
       (error 'dedupe-snapshot "path ~a is already a link" path))
 
-    (define digest (zip-digest path))
+    (define content-digest (zip-digest path))
     (match-define (list _ d1 d2 fn)
-      (regexp-match #rx"(..)(..)(.+)" digest))
+      (regexp-match #rx"(..)(..)(.+)" content-digest))
 
     (define target-path (build-path store-path d1 d2 fn))
     (log-deduper-debug "deduplicating ~a to ~a" path target-path)
     (make-directory* (path-only target-path))
     (rename-file-or-directory path target-path #t)
-    (make-file-or-directory-link target-path path)))
+    (make-file-or-directory-link target-path path)
+
+    (define checksum-path (~a path ".CHECKSUM"))
+    (define target-digest (call-with-input-file target-path sha1))
+    (log-deduper-debug "affixing ~a to ~a" checksum-path target-digest)
+    (with-output-to-file checksum-path
+      #:exists 'truncate/replace
+      (lambda ()
+        (display target-digest)))))
