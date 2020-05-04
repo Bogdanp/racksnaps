@@ -4,6 +4,7 @@
                      syntax/parse)
          racket/file
          racket/format
+         racket/match
          web-server/dispatch
          web-server/http
          web-server/servlet-dispatch
@@ -13,17 +14,43 @@
 
 ;; core ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(struct catalog-cache-entry (paths deadline)
+  #:transparent)
+
+(define catalog-cache-entry-ttl 300)
+
+(define (make-catalog-cache-entry paths)
+  (catalog-cache-entry paths (+ (current-seconds) catalog-cache-entry-ttl)))
+
+(define (deadline-passed? deadline)
+  (>= (current-seconds) deadline))
+
+(define catalog-cache (make-hash))
+(define catalog-cache-mu (make-semaphore 1))
+
 (define (find-catalogs start)
-  (define paths
-    (find-files
-     (lambda (p)
-       (define-values (_snapshot-path filename _)
-         (split-path p))
+  (call-with-semaphore catalog-cache-mu
+    (lambda ()
+      (match (hash-ref catalog-cache start #f)
+        [(or #f (catalog-cache-entry _ (? deadline-passed?)))
+         (define paths
+           (find-files
+            (lambda (p)
+              (define-values (_snapshot-path filename _)
+                (split-path p))
 
-       (string=? (path->string filename) "catalog"))
-     start))
+              (and (string=? (path->string filename) "catalog")
+                   (file-exists? (build-path p "pkgs-all"))))
+            start))
 
-  (sort (map path->string paths) string>?))
+         (define sorted-paths
+           (sort (map path->string paths) string>?))
+
+         (begin0 sorted-paths
+           (hash-set! catalog-cache start (make-catalog-cache-entry sorted-paths)))]
+
+        [(catalog-cache-entry paths _)
+         paths]))))
 
 
 ;; ui ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -204,6 +231,24 @@ EXAMPLE
        (section-title "Latest Built Snapshots")
        (snapshot-list latest-built-snaps)))))))
 
+(define (catalogs-endpoint _req)
+  (define ((catalog->jsexpr type) p)
+    (match-define (list _ _ date)
+      (regexp-match #px"^(built-)?snapshots/(..../../..)/catalog" p))
+    (hasheq 'date date
+            'type (symbol->string type)
+            'uri (format "https://racksnaps.defn.io/~a" p)))
+
+  (define source-catalogs (map (catalog->jsexpr 'source) (find-catalogs "snapshots")))
+  (define built-catalogs (map (catalog->jsexpr 'built) (find-catalogs "built-snapshots")))
+  (define all-catalogs (sort
+                        (append source-catalogs built-catalogs)
+                        string>?
+                        #:key (lambda (e)
+                                (hash-ref e 'date))))
+
+  (response/jsexpr all-catalogs))
+
 (define (not-found-page _req)
   (response/xexpr
    #:code 404
@@ -212,6 +257,7 @@ EXAMPLE
 (define-values (app _)
   (dispatch-rules
    [("") home-page]
+   [("api" "v1" "catalogs") catalogs-endpoint]
    [else not-found-page]))
 
 
@@ -222,7 +268,7 @@ EXAMPLE
      #:dispatch (dispatch/servlet app)))
 
   (define stop-logger
-    (start-logger '(GC app)))
+    (start-logger '(app)))
 
   (with-handlers ([exn:break?
                    (lambda _
