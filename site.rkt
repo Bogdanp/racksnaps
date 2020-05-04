@@ -28,6 +28,7 @@
 (define catalog-cache (make-hash))
 (define catalog-cache-mu (make-semaphore 1))
 
+;; TODO: There should eventually be a limit on these.
 (define (find-catalogs start)
   (call-with-semaphore catalog-cache-mu
     (lambda ()
@@ -235,9 +236,10 @@ EXAMPLE
   (define ((catalog->jsexpr type) p)
     (match-define (list _ _ date)
       (regexp-match #px"^(built-)?snapshots/(..../../..)/catalog" p))
-    (hasheq 'date date
-            'type (symbol->string type)
-            'uri (format "https://racksnaps.defn.io/~a" p)))
+    (hasheq
+     'date date
+     'type (symbol->string type)
+     'uri  (format "https://racksnaps.defn.io/~a/" p)))
 
   (define source-catalogs (map (catalog->jsexpr 'source) (find-catalogs "snapshots")))
   (define built-catalogs (map (catalog->jsexpr 'built) (find-catalogs "built-snapshots")))
