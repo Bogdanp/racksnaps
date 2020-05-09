@@ -8,7 +8,7 @@
 
 (define (make-done-cookie snapshot-path)
   (define cookie-path (build-path snapshot-path "catalog" "done"))
-  (log-common-debug "creating ~a")
+  (log-common-debug "creating ~a" cookie-path)
   (call-with-output-file cookie-path
     #:exists 'truncate/replace
     (lambda (out)
