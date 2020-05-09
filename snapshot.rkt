@@ -7,6 +7,7 @@
          racket/file
          racket/future
          racket/match
+         "common.rkt"
          "deduplication.rkt"
          "http.rkt"
          "logging.rkt"
@@ -14,7 +15,7 @@
 
 (define-logger archive)
 (define-logger snapshot)
-(define stop-logger (start-logger '(archive deduper pkg snapshot)))
+(define stop-logger (start-logger '(archive common deduper pkg snapshot)))
 
 (define all-pkgs
   (get "pkgs-all"))
@@ -89,12 +90,6 @@
              #:when (member k INFO_KEYS))
     (values k v)))
 
-(define (write/rktd path data)
-  (log-snapshot-debug "writing ~a" path)
-  (call-with-output-file path
-    (lambda (out)
-      (write data out))))
-
 (define (snapshot-package name info path dest)
   (log-snapshot-debug "creating archive of ~a" name)
   (pkg-create
@@ -164,4 +159,6 @@
    (define ch (archive-packages packages-to-snapshot))
    (snapshot-packages packages-to-snapshot snapshot-path ch)
    (dedupe-snapshot snapshot-path store-path)
+   (fix-catalog-checksums snapshot-path)
+   (make-done-cookie snapshot-path)
    (stop-logger)))

@@ -41,7 +41,8 @@
                 (split-path p))
 
               (and (string=? (path->string filename) "catalog")
-                   (file-exists? (build-path p "pkgs-all"))))
+                   (file-exists? (build-path p "pkgs-all"))
+                   (file-exists? (build-path p "done"))))
             start))
 
          (define sorted-paths

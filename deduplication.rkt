@@ -6,10 +6,13 @@
          racket/format
          racket/match
          racket/path
-         racket/port)
+         racket/port
+         "common.rkt"
+         "sugar.rkt")
 
 (provide
- dedupe-snapshot)
+ dedupe-snapshot
+ fix-catalog-checksums)
 
 (define-logger deduper)
 
@@ -40,16 +43,22 @@
 
       (sha1 in))))
 
-(define (dedupe-snapshot snapshot-path store-path)
-  (define all-pkg-archives
-    (find-files
-     (lambda (p)
-       (equal? (path-get-extension p) #".zip"))
-     (build-path snapshot-path "pkgs")))
-  (for ([path (in-list all-pkg-archives)])
-    (when (link-exists? path)
-      (error 'dedupe-snapshot "path ~a is already a link" path))
+(define (find-pkg-archives snapshot-path)
+  (find-files
+   (lambda (p)
+     (equal? (path-get-extension p) #".zip"))
+   (build-path snapshot-path "pkgs")))
 
+(define (make-checksum path)
+  (define checksum-path (path-add-extension path #".CHECKSUM" #"."))
+  (define target-digest (call-with-input-file path sha1))
+  (with-output-to-file checksum-path
+    #:exists 'replace
+    (lambda ()
+      (display target-digest))))
+
+(define (dedupe-snapshot snapshot-path store-path)
+  (for ([path (in-list (find-pkg-archives snapshot-path))] #:unless (link-exists? path))
     (define content-digest (zip-digest path))
     (match-define (list _ d1 d2 fn)
       (regexp-match #rx"(..)(..)(.+)" content-digest))
@@ -61,11 +70,23 @@
         (delete-file path)
         (rename-file-or-directory path target-path #t))
     (make-file-or-directory-link target-path path)
+    (make-checksum path)))
 
-    (define checksum-path (~a path ".CHECKSUM"))
-    (define target-digest (call-with-input-file target-path sha1))
-    (log-deduper-debug "affixing ~a to ~a" checksum-path target-digest)
-    (with-output-to-file checksum-path
-      #:exists 'truncate/replace
-      (lambda ()
-        (display target-digest)))))
+(define (fix-catalog-checksums snapshot-path)
+  (define catalog-path (build-path snapshot-path "catalog"))
+  (define pkgs-path (build-path catalog-path "pkg"))
+  (define pkgs-all
+    (for/hash ([path (in-list (directory-list pkgs-path #:build? #t))])
+      (define metadata (call-with-input-file path read))
+      (define source-path (simplify-path (build-path catalog-path ('source metadata))))
+      (define checksum-path (path-add-extension source-path #".CHECKSUM" #"."))
+      (define checksum (call-with-input-file checksum-path port->string))
+      (define updated-metadata
+        (~> metadata
+            (hash-set 'checksum checksum)
+            (hash-set 'versions (hash 'default (hash 'checksum checksum
+                                                     'source ('source metadata))))))
+      (write/rktd path updated-metadata)
+      (values ('name metadata) updated-metadata)))
+
+  (write/rktd (build-path snapshot-path "catalog" "pkgs-all") pkgs-all))

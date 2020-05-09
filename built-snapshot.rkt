@@ -9,6 +9,7 @@
          racket/match
          racket/port
          racket/system
+         "common.rkt"
          "deduplication.rkt"
          "logging.rkt"
          "sugar.rkt")
@@ -16,19 +17,13 @@
 (define-logger build)
 (define-logger docker)
 (define-logger setup)
-(define stop-logger (start-logger '(build deduper docker pkg setup)))
+(define stop-logger (start-logger '(build common deduper docker pkg setup)))
 
 (define current-concurrency
   (make-parameter (processor-count)))
 
 (define docker
   (find-executable-path "docker"))
-
-(define (write/rktd path data)
-  (log-build-debug "writing ~a" path)
-  (call-with-output-file path
-    (lambda (out)
-      (write data out))))
 
 (define BUILD_TIMEOUT
   (* 10 60 1000))
@@ -157,4 +152,6 @@
      (log-build-info "about to build ~a packages with ~a concurrency" (length packages-to-build) (current-concurrency))
      (build-packages root-path snapshot-path built-snapshot-path packages-to-build)
      (dedupe-snapshot built-snapshot-path store-path)
+     (fix-catalog-checksums built-snapshot-path)
+     (make-done-cookie built-snapshot-path)
      (stop-logger))))
