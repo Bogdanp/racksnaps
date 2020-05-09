@@ -57,7 +57,9 @@
     (define target-path (build-path store-path d1 d2 fn))
     (log-deduper-debug "deduplicating ~a to ~a" path target-path)
     (make-directory* (path-only target-path))
-    (rename-file-or-directory path target-path #t)
+    (if (file-exists? target-path)
+        (delete-file path)
+        (rename-file-or-directory path target-path #t))
     (make-file-or-directory-link target-path path)
 
     (define checksum-path (~a path ".CHECKSUM"))
