@@ -39,7 +39,7 @@
      "-e" "CI=1"
      "-e" "PLT_PKG_BUILD_SERVICE=1"
      (format "-v~a:~a" root-path root-path)
-     "bogdanp/racksnaps-built:7.6"
+     "bogdanp/racksnaps-built:7.7"
      "dumb-init"
      "bash" "-c"
      @~a{

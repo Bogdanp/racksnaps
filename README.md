@@ -16,14 +16,14 @@ The snapshots are currently available at
 
 * https://racksnaps.defn.io/snapshots/ for source snapshots and
 * https://racksnaps.defn.io/built-snapshots/ for package snapshots
-  built using regular Racket 7.6.
+  built using regular Racket 7.7.
 
-To develop against the snapshot from May 2nd, 2020 using Racket 7.6,
+To develop against the snapshot from June 16th, 2020 using Racket 7.7,
 you might run the following command:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/7.6/catalog/ \
-        https://racksnaps.defn.io/snapshots/2020/05/02/catalog/ \
+        https://download.racket-lang.org/releases/7.7/catalog/ \
+        https://racksnaps.defn.io/snapshots/2020/06/16/catalog/ \
         https://pkgs.racket-lang.org \
         https://planet-compats.racket-lang.org
 
@@ -32,15 +32,15 @@ the release catalog (for packages in the main distribution) and the
 snapshot:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/7.6/catalog/ \
-        https://racksnaps.defn.io/snapshots/2020/05/02/catalog/
+        https://download.racket-lang.org/releases/7.7/catalog/ \
+        https://racksnaps.defn.io/snapshots/2020/06/16/catalog/
 
 To speed up builds, you might layer in the built-snapshot for that day:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/7.6/catalog/ \
-        https://racksnaps.defn.io/built-snapshots/2020/05/02/catalog/ \
-        https://racksnaps.defn.io/snapshots/2020/05/02/catalog/
+        https://download.racket-lang.org/releases/7.7/catalog/ \
+        https://racksnaps.defn.io/built-snapshots/2020/06/16/catalog/ \
+        https://racksnaps.defn.io/snapshots/2020/06/16/catalog/
 
 
 ## How it Works
@@ -56,9 +56,7 @@ created from those archives.  Each of these is compiled in isolation
 and any packages that don't compile cleanly are excluded from the
 final snapshot.
 
-The packages are currently being built using Racket BC 7.6.  When 7.7
-comes out, we'll switch to it for future builds and when Racket CS
-becomes the default, we'll switch to it.
+The packages are currently being built using Racket CS 7.7.
 
 Snapshots are never modified once they succeed and a content
 addressing scheme is used for the individual packages to avoid using
