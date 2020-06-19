@@ -4,9 +4,6 @@
   <a href="https://github.com/Bogdanp/racksnaps/actions?query=workflow%3A%22CI%22"><img alt="GitHub Actions status" src="https://github.com/Bogdanp/racksnaps/workflows/CI/badge.svg"></a>
 </p>
 
-This is a work in progress and it may not be stable enough for general
-use yet.
-
 This code builds daily snapshots of the official [Racket Package
 Catalog].  The intent is to allow application developers to depend on
 specific, unchanging sets of packages until they're ready to update
