@@ -5,6 +5,7 @@
          racket/file
          racket/format
          racket/match
+         racket/string
          web-server/dispatch
          web-server/http
          web-server/servlet-dispatch
@@ -34,19 +35,26 @@
     (lambda ()
       (match (hash-ref catalog-cache start #f)
         [(or #f (catalog-cache-entry _ (? deadline-passed?)))
-         (define paths
+         (define all-paths
            (find-files
+            #:skip-filtered-directory? #t
             (lambda (p)
               (define-values (_snapshot-path filename _)
                 (split-path p))
 
-              (and (string=? (path->string filename) "catalog")
-                   (file-exists? (build-path p "pkgs-all"))
-                   (file-exists? (build-path p "done"))))
+              (case (path->string filename)
+                [("pkg" "pkgs") #f]
+                [("catalog")    (file-exists? (build-path p "done"))]
+                [else           (directory-exists? p)]))
             start))
 
+         (define catalog-paths
+           (for/list ([p (in-list all-paths)]
+                      #:when (string-suffix? (path->string p) "/catalog"))
+             (path->string p)))
+
          (define sorted-paths
-           (sort (map path->string paths) string>?))
+           (sort catalog-paths string>?))
 
          (begin0 sorted-paths
            (hash-set! catalog-cache start (make-catalog-cache-entry sorted-paths)))]
