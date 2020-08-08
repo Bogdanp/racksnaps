@@ -1,4 +1,4 @@
-FROM jackfirth/racket:7.7-cs-full
+FROM racket/racket:7.8-cs-full
 
 RUN  apt-get update \
   && apt-get install -y dumb-init

@@ -9,7 +9,7 @@ ExecStart= \
     -v /opt/racksnaps:/opt/racksnaps \
     -p 8000:8000 \
     --workdir /var/racksnaps \
-    bogdanp/racksnaps:7.7 \
+    bogdanp/racksnaps:7.8 \
       dumb-init \
       racket /opt/racksnaps/site.rkt
 
