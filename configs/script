@@ -26,8 +26,8 @@ log "Reloading nginx config..."
 service nginx reload
 
 log "Pulling docker images..."
-docker pull bogdanp/racksnaps:7.8
-docker pull bogdanp/racksnaps-built:7.8
+docker pull bogdanp/racksnaps:7.9
+docker pull bogdanp/racksnaps-built:7.9
 
 log "Pruning docker containers & images..."
 docker container prune -f
