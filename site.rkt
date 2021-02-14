@@ -199,12 +199,12 @@ SCRIPT
                        to depend on specific, unchanging sets of packages until
                        they're ready to update their apps.}
 
-       @para{To develop against the snapshot from November 8th, 2020 using Racket 7.9, you might run the following command:}
+       @para{To develop against the snapshot from February 20th, 2021 using Racket 8.0, you might run the following command:}
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/7.9/catalog/ \
-    https://racksnaps.defn.io/snapshots/2020/11/08/catalog/ \
+    https://download.racket-lang.org/releases/8.0/catalog/ \
+    https://racksnaps.defn.io/snapshots/2021/02/20/catalog/ \
     https://pkgs.racket-lang.org \
     https://planet-compats.racket-lang.org
 EXAMPLE
@@ -214,8 +214,8 @@ EXAMPLE
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/7.9/catalog/ \
-    https://racksnaps.defn.io/snapshots/2020/11/08/catalog/
+    https://download.racket-lang.org/releases/8.0/catalog/ \
+    https://racksnaps.defn.io/snapshots/2021/02/20/catalog/
 EXAMPLE
             )
 
@@ -223,9 +223,9 @@ EXAMPLE
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/7.9/catalog/ \
-    https://racksnaps.defn.io/built-snapshots/2020/11/08/catalog/ \
-    https://racksnaps.defn.io/snapshots/2020/11/08/catalog/
+    https://download.racket-lang.org/releases/8.0/catalog/ \
+    https://racksnaps.defn.io/built-snapshots/2021/02/20/catalog/ \
+    https://racksnaps.defn.io/snapshots/2021/02/20/catalog/
 EXAMPLE
             )
 

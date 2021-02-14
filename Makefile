@@ -1,9 +1,9 @@
 .PHONY: docker-images
 docker-images:
-	docker build -t bogdanp/racksnaps:7.9 -f Dockerfile .
-	docker build -t bogdanp/racksnaps-built:7.9 -f Dockerfile.built .
-	docker push bogdanp/racksnaps:7.9
-	docker push bogdanp/racksnaps-built:7.9
+	docker build -t bogdanp/racksnaps:8.0 -f Dockerfile .
+	docker build -t bogdanp/racksnaps-built:8.0 -f Dockerfile.built .
+	docker push bogdanp/racksnaps:8.0
+	docker push bogdanp/racksnaps-built:8.0
 
 .PHONY: deploy
 deploy:

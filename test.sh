@@ -8,7 +8,7 @@ docker run \
        --rm \
        -v"$(pwd)":"$(pwd)" \
        -v"$(pwd)"/cache:/root/.racket/download-cache \
-       bogdanp/racksnaps:7.9 \
+       bogdanp/racksnaps:8.0 \
          dumb-init \
          racket \
          "$(pwd)/snapshot.rkt" \
@@ -21,7 +21,7 @@ docker run \
        -v"$(pwd)":"$(pwd)" \
        -v"$(pwd)"/cache:/root/.racket/download-cache \
        -v/var/run/docker.sock:/var/run/docker.sock \
-       bogdanp/racksnaps-built:7.9 \
+       bogdanp/racksnaps-built:8.0 \
          dumb-init \
          racket \
          "$(pwd)/built-snapshot.rkt" \
