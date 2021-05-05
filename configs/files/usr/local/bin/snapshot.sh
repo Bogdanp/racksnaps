@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-VERSION=8.0
+VERSION=8.1
 SNAPSHOT_IMAGE="bogdanp/racksnaps:$VERSION"
 BUILT_SNAPSHOT_IMAGE="bogdanp/racksnaps-built:$VERSION"
 SNAPSHOT="$(date +%Y)/$(date +%m)/$(date +%d)"
