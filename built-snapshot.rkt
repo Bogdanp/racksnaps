@@ -47,7 +47,7 @@
          raco pkg config --set catalogs \
            file://@|built-snapshot-path|/catalog/ \
            file://@|snapshot-path|/catalog/
-         racket -M -l- raco pkg install --batch --auto --fail-fast -j 2 @name
+         racket -M -l- raco pkg install --batch --auto --fail-fast --no-docs -j 2 @name
          racket -M -l- raco pkg create --built --dest @|built-snapshot-path|/pkgs --from-install @name
          }))
 
