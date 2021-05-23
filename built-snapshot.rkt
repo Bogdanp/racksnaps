@@ -2,10 +2,8 @@
 
 (require net/url
          pkg/lib
-         racket/async-channel
          racket/file
          racket/format
-         racket/future
          racket/match
          racket/port
          racket/system
