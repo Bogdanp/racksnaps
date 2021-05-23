@@ -136,6 +136,41 @@
   (write/rktd (build-path built-catalog-path "pkgs") (sort (hash-keys pkgs-all) string<?))
   (write/rktd (build-path built-catalog-path "pkgs-all") pkgs-all))
 
+(define (sort/topological pkgs&deps)
+  (reverse
+   (let loop ([res null]
+              [todo (hash-keys pkgs&deps)]
+              [pkgs&deps pkgs&deps])
+     (cond
+       [(null? todo) res]
+       [else
+        (define pkg (car todo))
+        (cond
+          [(memq pkg res)
+           (loop res (cdr todo) pkgs&deps)]
+
+          [(null? (hash-ref pkgs&deps pkg null))
+           (loop (cons pkg res) (cdr todo) pkgs&deps)]
+
+          [else
+           (loop res
+                 (append (filter
+                          (λ (dep-pkg)
+                            (hash-has-key? pkgs&deps dep-pkg))
+                          (hash-ref pkgs&deps pkg null))
+                         todo)
+                 (hash-set pkgs&deps pkg null))])]))))
+
+(define (get-all-pkg-names/topological)
+  (sort/topological
+    (for/hasheq ([(name details) (get-all-pkg-details-from-catalogs)])
+      (values (string->symbol name)
+              (for/list ([dep (in-list (hash-ref details 'dependencies null))])
+                (string->symbol
+                 (cond
+                   [(string? dep) dep]
+                   [(list? dep) (car dep)]
+                   [else (raise-argument-error 'get-all-pkg-names/topological "(or/c string? list?)" dep)])))))))
 
 (module+ main
   (require racket/cmdline)
@@ -148,7 +183,7 @@
    #:args (root-path snapshot-path built-snapshot-path store-path . pkgs)
    (file-stream-buffer-mode (current-output-port) 'line)
    (parameterize ([current-pkg-catalogs (list (path->url (build-path snapshot-path "catalog")))])
-     (define packages-to-build (if (null? pkgs) (get-all-pkg-names-from-catalogs) pkgs))
+     (define packages-to-build (if (null? pkgs) (get-all-pkg-names/topological) pkgs))
      (log-build-info "about to build ~a packages with ~a concurrency" (length packages-to-build) (current-concurrency))
      (build-packages root-path snapshot-path built-snapshot-path packages-to-build)
      (dedupe-snapshot built-snapshot-path store-path)
