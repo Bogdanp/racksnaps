@@ -162,15 +162,16 @@
                  (hash-set pkgs&deps pkg null))])]))))
 
 (define (get-all-pkg-names/topological)
-  (sort/topological
-    (for/hasheq ([(name details) (get-all-pkg-details-from-catalogs)])
-      (values (string->symbol name)
-              (for/list ([dep (in-list (hash-ref details 'dependencies null))])
-                (string->symbol
-                 (cond
-                   [(string? dep) dep]
-                   [(list? dep) (car dep)]
-                   [else (raise-argument-error 'get-all-pkg-names/topological "(or/c string? list?)" dep)])))))))
+  (map symbol->string
+       (sort/topological
+        (for/hasheq ([(name details) (get-all-pkg-details-from-catalogs)])
+          (values (string->symbol name)
+                  (for/list ([dep (in-list (hash-ref details 'dependencies null))])
+                    (string->symbol
+                     (cond
+                       [(string? dep) dep]
+                       [(list? dep) (car dep)]
+                       [else (raise-argument-error 'get-all-pkg-names/topological "(or/c string? list?)" dep)]))))))))
 
 (module+ main
   (require racket/cmdline)
