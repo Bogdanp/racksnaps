@@ -112,18 +112,6 @@ body {
 STYLE
   )
 
-(define script #<<SCRIPT
-(function() {
-  (function(n, e, m, E, a, $) {
-    n[E]=n[E]||function(){(n[E].q=n[E].q||[]).push(arguments)};$=e.createElement(m);
-    $.id=E;$.src=a;$.async=1;m=e.getElementsByTagName(m)[0];m.parentNode.insertBefore($,m)
-  })(window, document, "script", "nemea", "https://racksnaps.nemea.co/track.js");
-
-  nemea("view");
-})();
-SCRIPT
-  )
-
 (define (template
          #:subtitle [subtitle #f]
          . content)
@@ -136,8 +124,7 @@ SCRIPT
                  @~a{racksnaps}))
      (style ([type "text/css"]) ,STYLE))
     (body
-     ,@content
-     (script ,script))))
+     ,@content)))
 
 (define-syntax (define-container stx)
   (syntax-parse stx
