@@ -13,14 +13,14 @@ The snapshots are currently available at
 
 * https://racksnaps.defn.io/snapshots/ for source snapshots and
 * https://racksnaps.defn.io/built-snapshots/ for package snapshots
-  built using regular Racket 8.1.
+  built using regular Racket 8.2.
 
-To develop against the snapshot from May 6th, 2021 using Racket 8.1,
+To develop against the snapshot from July 20th, 2021 using Racket 8.2,
 you might run the following command:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.1/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/05/06/catalog/ \
+        https://download.racket-lang.org/releases/8.2/catalog/ \
+        https://racksnaps.defn.io/snapshots/2021/07/20/catalog/ \
         https://pkgs.racket-lang.org \
         https://planet-compats.racket-lang.org
 
@@ -29,15 +29,15 @@ the release catalog (for packages in the main distribution) and the
 snapshot:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.1/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/05/06/catalog/
+        https://download.racket-lang.org/releases/8.2/catalog/ \
+        https://racksnaps.defn.io/snapshots/2021/07/20/catalog/
 
 To speed up builds, you might layer in the built-snapshot for that day:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.1/catalog/ \
-        https://racksnaps.defn.io/built-snapshots/2021/05/06/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/05/06/catalog/
+        https://download.racket-lang.org/releases/8.2/catalog/ \
+        https://racksnaps.defn.io/built-snapshots/2021/07/20/catalog/ \
+        https://racksnaps.defn.io/snapshots/2021/07/20/catalog/
 
 
 ## How it Works
@@ -53,7 +53,7 @@ created from those archives.  Each of these is compiled in isolation
 and any packages that don't compile cleanly are excluded from the
 final snapshot.
 
-The packages are currently being built using Racket CS 8.1.
+The packages are currently being built using Racket CS 8.2.
 
 Snapshots are never modified once they succeed and a content
 addressing scheme is used for the individual packages to avoid using
