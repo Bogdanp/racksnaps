@@ -37,6 +37,7 @@ server {
         autoindex  on;
     }
 
+    # Kept for backwards-compatibility.  Points to /snapshots.
     location /built-snapshots {
         autoindex  on;
     }

@@ -17,6 +17,7 @@ if [ ! -L /var/www/snapshots ]; then
     ln -s /var/racksnaps/snapshots /var/www/snapshots
 fi
 
+# For backwards compatibility.  Points to regular snapshots.
 if [ ! -L /var/www/built-snapshots ]; then
     log "Linking built-snapshots to www..."
     ln -s /var/racksnaps/built-snapshots /var/www/snapshots
