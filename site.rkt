@@ -173,7 +173,6 @@ STYLE
 
 (define (home-page _req)
   (define latest-snaps (find-catalogs "snapshots"))
-  (define latest-built-snaps (find-catalogs "built-snapshots"))
 
   (response/xexpr
    (template
@@ -181,12 +180,14 @@ STYLE
      (title "Racksnaps")
      (row
       (column
-       @para{Racksnaps builds daily snapshots of the official Racket
-                       Package Catalog. The intent is to allow application developers
-                       to depend on specific, unchanging sets of packages until
-                       they're ready to update their apps.}
+       @para{
+             Racksnaps builds daily snapshots of the official Racket
+             Package Catalog. The intent is to allow application
+             developers to depend on specific, unchanging sets of
+             packages until they're ready to update their apps.
+             }
 
-       @para{To develop against the snapshot from July 20th, 2021 using Racket 8.2, you might run the following command:}
+       @para{To develop against the snapshot from July 20th, 2021, you might run the following command:}
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
@@ -206,16 +207,6 @@ raco pkg config --set catalogs \
 EXAMPLE
             )
 
-       @para{To speed up builds, you might layer in the built-snapshot for that day:}
-
-       (pre #<<EXAMPLE
-raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/8.2/catalog/ \
-    https://racksnaps.defn.io/built-snapshots/2021/07/20/catalog/ \
-    https://racksnaps.defn.io/snapshots/2021/07/20/catalog/
-EXAMPLE
-            )
-
        @para{Racksnaps' infrastructure and development is supported by
        @anchor[bp-url]{Bogdan Popa} and the source code, along with
        more details about how snapshots are created, is
@@ -223,10 +214,7 @@ EXAMPLE
      (row
       (column
        (section-title "Latest Snapshots")
-       (snapshot-list latest-snaps))
-      (column
-       (section-title "Latest Built Snapshots")
-       (snapshot-list latest-built-snaps)))))))
+       (snapshot-list latest-snaps)))))))
 
 (define (catalogs-endpoint _req)
   (define ((catalog->jsexpr type) p)
@@ -237,15 +225,13 @@ EXAMPLE
      'type (symbol->string type)
      'uri  (format "https://racksnaps.defn.io/~a/" p)))
 
-  (define source-catalogs (map (catalog->jsexpr 'source) (find-catalogs "snapshots")))
-  (define built-catalogs (map (catalog->jsexpr 'built) (find-catalogs "built-snapshots")))
-  (define all-catalogs (sort
-                        (append source-catalogs built-catalogs)
-                        string>?
-                        #:key (lambda (e)
-                                (hash-ref e 'date))))
+  (define catalogs
+    (sort
+     (map (catalog->jsexpr 'source)
+          (find-catalogs "snapshots"))
+     string>? #:key (λ (e) (hash-ref e 'date))))
 
-  (response/jsexpr all-catalogs))
+  (response/jsexpr catalogs))
 
 (define (not-found-page _req)
   (response/xexpr

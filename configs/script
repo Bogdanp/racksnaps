@@ -19,7 +19,7 @@ fi
 
 if [ ! -L /var/www/built-snapshots ]; then
     log "Linking built-snapshots to www..."
-    ln -s /var/racksnaps/built-snapshots /var/www/built-snapshots
+    ln -s /var/racksnaps/built-snapshots /var/www/snapshots
 fi
 
 log "Reloading nginx config..."

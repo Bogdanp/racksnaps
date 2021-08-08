@@ -9,14 +9,10 @@ Catalog].  The intent is to allow application developers to depend on
 specific, unchanging sets of packages until they're ready to update
 their apps.
 
-The snapshots are currently available at
+The snapshots are currently available at https://racksnaps.defn.io/snapshots/ .
 
-* https://racksnaps.defn.io/snapshots/ for source snapshots and
-* https://racksnaps.defn.io/built-snapshots/ for package snapshots
-  built using regular Racket 8.2.
-
-To develop against the snapshot from July 20th, 2021 using Racket 8.2,
-you might run the following command:
+To develop against the snapshot from July 20th, 2021, you might run
+the following command:
 
     raco pkg config --set catalogs \
         https://download.racket-lang.org/releases/8.2/catalog/ \
@@ -32,13 +28,6 @@ snapshot:
         https://download.racket-lang.org/releases/8.2/catalog/ \
         https://racksnaps.defn.io/snapshots/2021/07/20/catalog/
 
-To speed up builds, you might layer in the built-snapshot for that day:
-
-    raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.2/catalog/ \
-        https://racksnaps.defn.io/built-snapshots/2021/07/20/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/07/20/catalog/
-
 
 ## How it Works
 
@@ -47,21 +36,11 @@ pkgs.racket-lang.org for metadata and source locations.  It then
 creates a source package archive for each package whose sources are
 still valid.
 
-Once all the source package archives are created, "built" packages
-(packages that contain source code, docs and compiled `.zo` files) are
-created from those archives.  Each of these is compiled in isolation
-and any packages that don't compile cleanly are excluded from the
-final snapshot.
-
-The packages are currently being built using Racket CS 8.2.
-
 Snapshots are never modified once they succeed and a content
 addressing scheme is used for the individual packages to avoid using
 up too much disk space over time.
 
-`snapshot.rkt` creates the "source" snapshots and `built-snapshot.rkt`
-creates the "built" snapshots.
-
+The `snapshot.rkt` program creates the snapshots.
 
 ## Testing Changes
 
