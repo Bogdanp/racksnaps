@@ -15,8 +15,8 @@ To develop against the snapshot from July 20th, 2021, you might run
 the following command:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.2/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/07/20/catalog/ \
+        https://download.racket-lang.org/releases/8.3/catalog/ \
+        https://racksnaps.defn.io/snapshots/2021/11/09/catalog/ \
         https://pkgs.racket-lang.org \
         https://planet-compats.racket-lang.org
 
@@ -25,8 +25,8 @@ the release catalog (for packages in the main distribution) and the
 snapshot:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.2/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/07/20/catalog/
+        https://download.racket-lang.org/releases/8.3/catalog/ \
+        https://racksnaps.defn.io/snapshots/2021/11/09/catalog/
 
 
 ## How it Works

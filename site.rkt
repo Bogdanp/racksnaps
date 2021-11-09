@@ -191,8 +191,8 @@ STYLE
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/8.2/catalog/ \
-    https://racksnaps.defn.io/snapshots/2021/07/20/catalog/ \
+    https://download.racket-lang.org/releases/8.3/catalog/ \
+    https://racksnaps.defn.io/snapshots/2021/11/09/catalog/ \
     https://pkgs.racket-lang.org \
     https://planet-compats.racket-lang.org
 EXAMPLE
@@ -202,8 +202,8 @@ EXAMPLE
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/8.2/catalog/ \
-    https://racksnaps.defn.io/snapshots/2021/07/20/catalog/
+    https://download.racket-lang.org/releases/8.3/catalog/ \
+    https://racksnaps.defn.io/snapshots/2021/11/09/catalog/
 EXAMPLE
             )
 
