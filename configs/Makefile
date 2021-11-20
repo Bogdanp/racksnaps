@@ -1,3 +1,3 @@
 .PHONY: deploy
 deploy:
-	drist root@snapshots
+	drist root@racksnaps

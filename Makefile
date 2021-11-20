@@ -7,5 +7,5 @@ docker-images:
 
 .PHONY: deploy
 deploy:
-	rsync -avh --delete *.rkt racksnaps@snapshots:/opt/racksnaps/
+	rsync -avh --delete *.rkt racksnaps@racksnaps:/opt/racksnaps/
 	$(MAKE) -C configs/
