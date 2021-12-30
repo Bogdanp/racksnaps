@@ -233,6 +233,17 @@ EXAMPLE
 
   (response/jsexpr catalogs))
 
+(define (robots-txt-page _req)
+  (response/output
+   #:mime-type #"text/plain"
+   (lambda (out)
+     (displayln #<<ROBOTS
+User-agent: *
+Disallow: /built-snapshots/
+Disallow: /snapshots/
+ROBOTS
+                out))))
+
 (define (not-found-page _req)
   (response/xexpr
    #:code 404
@@ -242,6 +253,7 @@ EXAMPLE
   (dispatch-rules
    [("") home-page]
    [("api" "v1" "catalogs") catalogs-endpoint]
+   [("robots.txt") robots-txt-page]
    [else not-found-page]))
 
 
