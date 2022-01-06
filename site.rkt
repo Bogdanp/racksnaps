@@ -187,7 +187,7 @@ STYLE
              packages until they're ready to update their apps.
              }
 
-       @para{To develop against the snapshot from July 20th, 2021, you might run the following command:}
+       @para{To develop against the snapshot from November 9th, 2021, you might run the following command:}
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \

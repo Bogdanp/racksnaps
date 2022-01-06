@@ -11,7 +11,7 @@ their apps.
 
 The snapshots are currently available at https://racksnaps.defn.io/snapshots/ .
 
-To develop against the snapshot from July 20th, 2021, you might run
+To develop against the snapshot from November 9th, 2021, you might run
 the following command:
 
     raco pkg config --set catalogs \
