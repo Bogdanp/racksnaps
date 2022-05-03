@@ -11,12 +11,12 @@ their apps.
 
 The snapshots are currently available at https://racksnaps.defn.io/snapshots/ .
 
-To develop against the snapshot from November 9th, 2021, you might run
-the following command:
+To develop against the snapshot from May 3rd, 2022, you might run the
+following command:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.3/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/11/09/catalog/ \
+        https://download.racket-lang.org/releases/8.5/catalog/ \
+        https://racksnaps.defn.io/snapshots/2022/05/03/catalog/ \
         https://pkgs.racket-lang.org \
         https://planet-compats.racket-lang.org
 
@@ -25,8 +25,8 @@ the release catalog (for packages in the main distribution) and the
 snapshot:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.3/catalog/ \
-        https://racksnaps.defn.io/snapshots/2021/11/09/catalog/
+        https://download.racket-lang.org/releases/8.5/catalog/ \
+        https://racksnaps.defn.io/snapshots/2022/05/03/catalog/
 
 
 ## How it Works
