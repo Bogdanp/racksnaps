@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-VERSION=8.5
+VERSION=8.6
 SNAPSHOT_IMAGE="bogdanp/racksnaps:$VERSION"
 SNAPSHOT="$(date +%Y)/$(date +%m)/$(date +%d)"
 ROOT_PATH="/var/racksnaps"

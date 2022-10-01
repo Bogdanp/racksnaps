@@ -15,7 +15,7 @@ To develop against the snapshot from May 3rd, 2022, you might run the
 following command:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.5/catalog/ \
+        https://download.racket-lang.org/releases/8.6/catalog/ \
         https://racksnaps.defn.io/snapshots/2022/05/03/catalog/ \
         https://pkgs.racket-lang.org \
         https://planet-compats.racket-lang.org
@@ -25,7 +25,7 @@ the release catalog (for packages in the main distribution) and the
 snapshot:
 
     raco pkg config --set catalogs \
-        https://download.racket-lang.org/releases/8.5/catalog/ \
+        https://download.racket-lang.org/releases/8.6/catalog/ \
         https://racksnaps.defn.io/snapshots/2022/05/03/catalog/
 
 
