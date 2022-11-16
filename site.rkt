@@ -187,12 +187,12 @@ STYLE
              packages until they're ready to update their apps.
              }
 
-       @para{To develop against the snapshot from May 3rd, 2022, you might run the following command:}
+       @para{To develop against the snapshot from November 16th, 2022, you might run the following command:}
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/8.6/catalog/ \
-    https://racksnaps.defn.io/snapshots/2022/05/03/catalog/ \
+    https://download.racket-lang.org/releases/8.7/catalog/ \
+    https://racksnaps.defn.io/snapshots/2022/11/16/catalog/ \
     https://pkgs.racket-lang.org \
     https://planet-compats.racket-lang.org
 EXAMPLE
@@ -202,8 +202,8 @@ EXAMPLE
 
        (pre #<<EXAMPLE
 raco pkg config --set catalogs \
-    https://download.racket-lang.org/releases/8.6/catalog/ \
-    https://racksnaps.defn.io/snapshots/2022/05/03/catalog/
+    https://download.racket-lang.org/releases/8.7/catalog/ \
+    https://racksnaps.defn.io/snapshots/2022/11/16/catalog/
 EXAMPLE
             )
 

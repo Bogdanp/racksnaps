@@ -1,4 +1,4 @@
-FROM racket/racket:8.6-full
+FROM racket/racket:8.7-full
 
 RUN  apt-get update \
   && apt-get install -y dumb-init
