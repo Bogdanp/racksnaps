@@ -1,7 +1,7 @@
 #lang at-exp racket/base
 
 (require (for-syntax racket/base
-                     syntax/parse)
+                     syntax/parse/pre)
          racket/file
          racket/format
          racket/match
@@ -256,7 +256,6 @@ ROBOTS
    [("robots.txt") robots-txt-page]
    [else not-found-page]))
 
-
 (module+ main
   (define stop
     (serve
@@ -266,8 +265,7 @@ ROBOTS
   (define stop-logger
     (start-logger '(app)))
 
-  (with-handlers ([exn:break?
-                   (lambda _
-                     (stop)
-                     (stop-logger))])
-    (sync/enable-break never-evt)))
+  (with-handlers ([exn:break? void])
+    (sync/enable-break never-evt))
+  (stop)
+  (stop-logger))
